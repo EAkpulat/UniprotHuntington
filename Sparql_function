@@ -1,0 +1,24 @@
+def execute_sparql_query(endpoint, query):
+    # Initialize SPARQLWrapper with the endpoint
+    sparql = SPARQLWrapper(endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+
+    # Execute the query and retrieve the results
+    results = sparql.query().convert()
+    bindings = results["results"]["bindings"]
+
+    # Return an empty DataFrame if there are no results
+    if not bindings:
+        return pd.DataFrame()
+
+    # Extract column names from the first result entry
+    columns = bindings[0].keys()
+
+    # Convert results to a list of dictionaries
+    data = []
+    for row in bindings:
+        data.append({col: row[col]['value'] for col in columns})
+
+    # Convert list of dictionaries to a Pandas DataFrame
+    return pd.DataFrame(data)
