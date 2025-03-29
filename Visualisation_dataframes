@@ -1,0 +1,38 @@
+#Histogram cellular location (histogram)
+plt.figure(figsize=(12, 6))
+plt.bar(df_counts_location.index, df_counts_location.values, color="skyblue")
+plt.xlabel("Location Inside Cell", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.title("Frequency of Locations Inside the Cell", fontsize=14)
+plt.xticks(rotation=90)  # Rotate x-axis labels for better visibility
+plt.show()
+
+#Histogram disease annotation (histogram)
+plt.figure(figsize=(12, 6))
+plt.bar(df_counts_description.index, df_counts_description.values, color="skyblue")
+plt.xlabel("Causes", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.title("Frequency of issues with the huntingtin protein", fontsize=14)
+plt.xticks(rotation=90)  # Rotate x-axis labels for better visibility
+plt.show()
+
+
+#Frequency of functions related to huntingtin protein (histogram)
+plt.figure(figsize=(12, 6))
+plt.bar(df_counts_biotype.index, df_counts_biotype.values, color="skyblue")
+plt.xlabel("Causes", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.title("Frequency of disease causes", fontsize=14)
+plt.xticks(rotation=90)  # Rotate x-axis labels for better visibility
+plt.show()
+
+#Frequency moltype annotation (bubbleplot)
+plt.figure(figsize=(12, 6))
+plt.scatter(df_counts_moltype.index, df_counts_moltype.values, 
+            s=df_counts_moltype.values * 10,  # Adjust the size of the bubbles
+            color="skyblue", alpha=0.6, edgecolors="w", linewidth=2)
+plt.xlabel("Causes", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.title("Impact of Huntingtin Mutation on Protein Binding and Phosphorylation-Related Activities", fontsize=14)
+plt.xticks(rotation=90)
+plt.show()
