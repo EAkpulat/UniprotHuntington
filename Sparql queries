@@ -1,0 +1,148 @@
+SPARQL_QUERY_1 = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX taxon: <http://purl.uniprot.org/taxonomy/>
+PREFIX up: <http://purl.uniprot.org/core/>
+
+SELECT ?sequence ?gene ?taxon ?text ?isoform ?name
+WHERE
+{
+        #Starting point
+        ?protein a up:Protein;
+          up:organism ?taxon;
+          up:recommendedName ?recommended .
+        ?recommended up:fullName ?name .
+
+        #Filter by HTT and HIP1
+        ?protein up:encodedBy ?gene .
+        ?gene skos:prefLabel ?geneLabel .
+
+        #Filter by disease
+        ?protein up:annotation ?annotation;
+          up:sequence ?isoform .
+        ?isoform rdf:value ?sequence .
+        ?annotation a up:Disease_Annotation;
+          rdfs:comment ?text .
+              ?protein up:annotation ?diseaseAnnotation .
+    ?diseaseAnnotation up:disease/skos:prefLabel "Huntington disease" .
+}
+"""
+
+SPARQL_QUERY_2 = """
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT
+    ?location_inside_cell
+    ?cellcmpt
+    ?subcellAnnotation
+    ?description
+
+WHERE
+{
+    #Filter to specific gene
+    ?protein a up:Protein ;
+        up:encodedBy ?gene .
+
+
+    #Annotation for the different mutations
+    ?protein up:annotation ?annotation .
+    ?annotation a up:Mutagenesis_Annotation .
+    ?annotation rdfs:comment ?description .
+
+    #Filtering for disease and locating the disease origin
+    ?protein up:annotation ?diseaseAnnotation , ?subcellAnnotation .
+    ?diseaseAnnotation up:disease/skos:prefLabel "Huntington disease" .
+    ?subcellAnnotation up:locatedIn/up:cellularComponent ?cellcmpt .
+    ?cellcmpt skos:prefLabel ?location_inside_cell .
+}
+LIMIT 200
+
+"""
+
+SPARQL_QUERY_3 = """
+PREFIX faldo: <http://biohackathon.org/resource/faldo#>
+PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX GO: <http://purl.obolibrary.org/obo/GO_>
+
+SELECT
+    ?location_inside_cell
+    ?cellcmpt
+    ?subcellAnnotation
+    ?description
+    ?biotype
+    ?moltype
+    ?name
+
+WHERE
+{
+    # Filter to specific gene
+    ?protein a up:Protein ;
+        up:encodedBy ?gene .
+
+    # Annotation for the different mutations
+    ?protein up:annotation ?annotation .
+    ?annotation a up:Mutagenesis_Annotation .
+    ?annotation rdfs:comment ?description .
+
+    # Filtering for disease and locating the disease origin
+    ?protein up:annotation ?diseaseAnnotation , ?subcellAnnotation .
+    ?diseaseAnnotation up:disease/skos:prefLabel "Huntington disease" .
+    ?subcellAnnotation up:locatedIn/up:cellularComponent ?cellcmpt .
+    ?cellcmpt skos:prefLabel ?location_inside_cell .
+
+    # Retrieve GO classification for biological processes
+    OPTIONAL {
+        ?protein up:classifiedWith ?goTerm .
+        ?goTerm rdfs:subClassOf GO:0008150 .  # Biological process root (GO term for biological process)
+        ?goTerm rdfs:label ?biotype .
+    }
+
+    # Retrieve GO classification for molecular functions
+    OPTIONAL {
+        ?protein up:classifiedWith ?mfTerm .
+        ?mfTerm rdfs:subClassOf GO:0003674 .  # Molecular function root
+        ?mfTerm rdfs:label ?moltype .
+    }
+
+    # Optionally filter specific biological processes and molecular functions (if needed)
+    FILTER(
+        (?biotype IN ("neurogenesis", "apoptosis", "protein folding", "synaptic transmission", "cellular response to stress") || BOUND(?biotype))
+        || (?moltype IN ("protein binding", "enzyme binding") || BOUND(?moltype))
+    )
+}
+LIMIT 500
+
+"""
+
+SPARQL_QUERY_4 = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX up: <http://purl.uniprot.org/core/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?protein ?participantlabel (COUNT(?interaction) AS ?interactionCount)
+WHERE {
+    ?protein a up:Protein ;
+             up:recommendedName ?recommended ;
+             up:interaction ?interaction ;
+             up:annotation ?diseaseAnnotation, ?annotation ;
+             up:sequence ?isoform .
+
+    # Ensure we are only selecting Huntingtin protein
+    ?recommended up:fullName "Huntingtin" .
+
+    # Filter the interactions for participants involved with Huntingtin
+    ?interaction up:participant ?participant .
+    ?participant rdfs:label ?participantlabel .
+
+    # Disease and annotation filtering
+    ?diseaseAnnotation up:disease/skos:prefLabel "Huntington disease" .
+}
+GROUP BY ?protein ?participantlabel
+ORDER BY DESC(?interactionCount)
+LIMIT 50
+
+"""
