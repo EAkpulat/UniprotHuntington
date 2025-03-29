@@ -1,0 +1,18 @@
+#frequency of disease occurence
+df_description1 = df2.description
+df_counts_description = df_description1.value_counts()
+df_counts_description = df_counts_description.sort_values(ascending=False)
+df_counts_description
+
+#Frequency of molecular activity
+df_moltype = df3.moltype
+df_counts_moltype = df_moltype.value_counts()
+df_counts_moltype = df_counts_moltype.sort_values(ascending=False)
+df_counts_moltype
+
+#Frequency of location inside cell
+df_biotype = df3.biotype
+df_counts_biotype = df_biotype.value_counts()
+df_counts_biotype = df_counts_biotype.sort_values(ascending=False)
+df_counts_biotype
+
