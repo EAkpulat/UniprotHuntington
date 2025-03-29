@@ -4,5 +4,5 @@ A disease which has been greatly annotated in UniProt, is Huntington’s disease
 With the help of UniProt research can be done on the huntingtin protein, and its interaction with other molecules. 
 <br>
 <br>
-
+<img src ="Timeline_project.png" >
 First 
