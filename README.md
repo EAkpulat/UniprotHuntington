@@ -18,6 +18,9 @@ After running the SPARQL queries, the dataframes were organized. This code can b
 ## Visualisation Uniprot data
 <br>
 Finally, to visualize the information gathered from UniProt, histograms and a bubble plot were created. The code for both can be found in the file Visualisation_dataframes.
+<br>
 
+## References
+[![DOI](https://zenodo.org/badge/957085544.svg)](https://doi.org/10.5281/zenodo.15108674)
 
 
