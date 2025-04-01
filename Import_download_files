@@ -4,4 +4,4 @@ import sys
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 import matplotlib.pyplot as plt
-import seaborn as sns
+
